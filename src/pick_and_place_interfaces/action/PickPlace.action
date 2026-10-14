@@ -1,0 +1,10 @@
+string pick_target
+string place_target
+---
+bool success
+string failed_state
+string message
+---
+string current_state
+uint8 step_index
+uint8 total_steps

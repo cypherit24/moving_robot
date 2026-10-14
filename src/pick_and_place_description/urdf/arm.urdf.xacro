@@ -1,0 +1,187 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="moving_robot">
+
+  <!-- P2-1 치수 변수 선언 -->
+  <xacro:property name="H" value="0.15" />   <!-- 바닥 ~ 어깨 높이 -->
+  <xacro:property name="L2" value="0.25" />  <!-- 상완 길이 -->
+  <xacro:property name="L3" value="0.20" />  <!-- 전완 길이 -->
+  <xacro:property name="D" value="0.12" />   <!-- 손목 ~ grasp_point 거리 -->
+
+  <!-- World Link -->
+  <link name="world"/>
+
+  <!-- Fixed Joint: world -> base_link -->
+  <joint name="world_joint" type="fixed">
+    <parent link="world"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Base Link -->
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 ${H/2}" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.05" length="${H}"/>
+      </geometry>
+      <material name="dark_grey">
+        <color rgba="0.2 0.2 0.2 1.0"/>
+      </material>
+    </visual>
+  </link>
+
+  <!-- Joint 1: Base 회전 (Z축, -3.14 ~ 3.14 rad)[cite: 1] -->
+  <joint name="joint1" type="revolute">
+    <parent link="base_link"/>
+    <child link="link1"/>
+    <origin xyz="0 0 ${H}" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-3.14" upper="3.14" effort="10.0" velocity="1.0"/>
+  </joint>
+
+  <link name="link1">
+    <visual>
+      <origin xyz="0 0 0.02" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.04" length="0.04"/>
+      </geometry>
+      <material name="blue">
+        <color rgba="0.0 0.0 0.8 1.0"/>
+      </material>
+    </visual>
+  </link>
+
+  <!-- Joint 2: 어깨 (Y축, -1.57 ~ 1.57 rad)[cite: 1] -->
+  <joint name="joint2" type="revolute">
+    <parent link="link1"/>
+    <child link="link2"/>
+    <origin xyz="0 0 0.02" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-1.57" upper="1.57" effort="10.0" velocity="1.0"/>
+  </joint>
+
+  <link name="link2">
+    <visual>
+      <origin xyz="0 0 ${L2/2}" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.03" length="${L2}"/>
+      </geometry>
+      <material name="light_blue">
+        <color rgba="0.2 0.6 1.0 1.0"/>
+      </material>
+    </visual>
+  </link>
+
+  <!-- Joint 3: 팔꿈치 (Y축, -2.50 ~ 2.50 rad)[cite: 1] -->
+  <joint name="joint3" type="revolute">
+    <parent link="link2"/>
+    <child link="link3"/>
+    <origin xyz="0 0 ${L2}" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-2.50" upper="2.50" effort="10.0" velocity="1.0"/>
+  </joint>
+
+  <link name="link3">
+    <visual>
+      <origin xyz="0 0 ${L3/2}" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.025" length="${L3}"/>
+      </geometry>
+      <material name="green">
+        <color rgba="0.0 0.8 0.0 1.0"/>
+      </material>
+    </visual>
+  </link>
+
+  <!-- Joint 4: 손목 (Y축, -2.00 ~ 2.00 rad)[cite: 1] -->
+  <joint name="joint4" type="revolute">
+    <parent link="link3"/>
+    <child link="link4"/>
+    <origin xyz="0 0 ${L3}" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-2.00" upper="2.00" effort="10.0" velocity="1.0"/>
+  </joint>
+
+  <link name="link4">
+    <visual>
+      <origin xyz="0 0 0.025" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.02" length="0.05"/>
+      </geometry>
+      <material name="yellow">
+        <color rgba="0.9 0.9 0.0 1.0"/>
+      </material>
+    </visual>
+  </link>
+
+  <!-- Fixed Joint: link4 -> gripper_base[cite: 1] -->
+  <joint name="gripper_base_joint" type="fixed">
+    <parent link="link4"/>
+    <child link="gripper_base"/>
+    <origin xyz="0 0 0.05" rpy="0 0 0"/>
+  </joint>
+
+  <link name="gripper_base">
+    <visual>
+      <origin xyz="0 0 0.01" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.04 0.09 0.02"/>
+      </geometry>
+      <material name="grey">
+        <color rgba="0.5 0.5 0.5 1.0"/>
+      </material>
+    </visual>
+  </link>
+
+  <!-- Finger Left Joint (Prismatic +Y, 0 ~ 0.04 m)[cite: 1] -->
+  <joint name="finger_left_joint" type="prismatic">
+    <parent link="gripper_base"/>
+    <child link="finger_left"/>
+    <origin xyz="0 0.02 0.04" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="0.0" upper="0.04" effort="5.0" velocity="0.1"/>
+  </joint>
+
+  <link name="finger_left">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.03 0.01 0.06"/>
+      </geometry>
+      <material name="white">
+        <color rgba="0.9 0.9 0.9 1.0"/>
+      </material>
+    </visual>
+  </link>
+
+  <!-- Finger Right Joint (Prismatic -Y, 0 ~ 0.04 m)[cite: 1] -->
+  <joint name="finger_right_joint" type="prismatic">
+    <parent link="gripper_base"/>
+    <child link="finger_right"/>
+    <origin xyz="0 -0.02 0.04" rpy="0 0 0"/>
+    <axis xyz="0 -1 0"/>
+    <limit lower="0.0" upper="0.04" effort="5.0" velocity="0.1"/>
+  </joint>
+
+  <link name="finger_right">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.03 0.01 0.06"/>
+      </geometry>
+      <material name="white">
+        <color rgba="0.9 0.9 0.9 1.0"/>
+      </material>
+    </visual>
+  </link>
+
+  <!-- Fixed Joint: gripper_base -> grasp_point (두 손가락 중앙)[cite: 1] -->
+  <joint name="grasp_point_joint" type="fixed">
+    <parent link="gripper_base"/>
+    <child link="grasp_point"/>
+    <origin xyz="0 0 0.07" rpy="0 0 0"/>
+  </joint>
+
+  <link name="grasp_point"/>
+
+</robot>
