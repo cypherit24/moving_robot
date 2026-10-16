@@ -1,0 +1,14 @@
+arm_sim_node:
+  ros__parameters:
+    joint_names:
+      - "joint1"
+      - "joint2"
+      - "joint3"
+      - "joint4"
+      - "finger_left_joint"
+      - "finger_right_joint"
+    lower_limits: [-3.14, -1.57, -2.50, -2.00, 0.0, 0.0]
+    upper_limits: [3.14, 1.57, 2.50, 2.00, 0.04, 0.04]
+    initial_positions: [0.0, 0.0, 0.0, 0.0, 0.04, 0.04]
+    default_velocity: 1.0
+    publish_rate_hz: 50.0
