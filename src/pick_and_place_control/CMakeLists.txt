@@ -18,6 +18,16 @@ find_package(tf2_ros REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(pick_and_place_interfaces REQUIRED)
 
+add_executable(arm_sim_node src/arm_sim_node.cpp)
+ament_target_dependencies(arm_sim_node
+  rclcpp
+  sensor_msgs
+  pick_and_place_interfaces
+)
+install(TARGETS
+  arm_sim_node
+  DESTINATION lib/${PROJECT_NAME}
+)
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights
