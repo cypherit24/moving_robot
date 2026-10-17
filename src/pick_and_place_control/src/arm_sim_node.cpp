@@ -21,7 +21,7 @@ public:
         this->declare_parameter<double>("publish_rate_hz", 50.0);
 
         // 2. 파라미터 가져오기
-        std::vector<std::string> joint_names = this->get_parameter("joint_names").as_string_array();
+        std::vector<std::string> joint_names = this->get_parameter("joint_names").as_string_array();    //as_string_array 만 쓰면 node의 해당함수 주소가 리턴됨
         std::vector<double> lower_limits = this->get_parameter("lower_limits").as_double_array();
         std::vector<double> upper_limits = this->get_parameter("upper_limits").as_double_array();
         std::vector<double> initial_positions = this->get_parameter("initial_positions").as_double_array();
@@ -101,7 +101,7 @@ private:
 
         for (size_t i = 0; i < msg->joint_names.size(); i++) {
             size_t idx = joint_name_to_index_[msg->joint_names[i]];
-            double clamped_pos = std::clamp(msg->positions[i], lower_limits_[idx], upper_limits_[idx]);
+            double clamped_pos = std::clamp(msg->positions[i], lower_limits_[idx], upper_limits_[idx]); //clamp는 (비교값 , low , high ) 와 각각 비교해 범위 초과시 low or high값1개, 범위 내 비교값 리턴
             
             if (clamped_pos != msg->positions[i]) {
                 RCLCPP_WARN(this->get_logger(), "관절 %s 의 position 범위 초과 -> Clamp 처리: %f", 
@@ -149,8 +149,8 @@ private:
     }
 
     // 멤버 변수
-    std::unordered_map<std::string, size_t> joint_name_to_index_;
-    std::vector<std::string> joint_names_;
+    std::unordered_map<std::string, size_t> joint_name_to_index_;   //관절 이름을 입력하면 인덱스 번호(1,2)를 리턴
+    std::vector<std::string> joint_names_;  //
     std::vector<double> current_positions_;
     std::vector<double> target_positions_;
     std::vector<double> target_velocities_;
@@ -167,8 +167,8 @@ private:
 int main(int argc, char * argv[])
 {
     rclcpp::init(argc, argv);
-    auto node = std::make_shared<ArmSimNode>();
-    rclcpp::spin(node);
+    auto node = std::make_shared<ArmSimNode>();     //생성자 시작
+    rclcpp::spin(node); //spin시작. 이때부터 이벤트 발행
     rclcpp::shutdown();
     return 0;
 }
